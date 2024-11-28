@@ -137,6 +137,7 @@ jobs:
 | Field | Description |
 |-------|-------------|
 | `changes` | Generated CHANGELOG changes for the latest tag, without the version / date header *(for use in GitHub Releases)*. |
+| `changesPlainText` | Plain Text version of the `changes` output |
 
 ## :warning: Important :warning:
 
