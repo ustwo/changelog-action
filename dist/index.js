@@ -28205,7 +28205,7 @@ async function main () {
       })
       changesFile.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectFile.output}:\n\n${body}\n`)
       changesVar.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectVar.output}:\n\n${body}\n`)
-      changesPlainVar.push(`- due to ${subjectPlainVar.output}:\n\n${body}\n`)
+      changesPlainVar.push(`due to ${subjectPlainVar.output}:\n\n${body}\n`)
     }
     idx++
   }
@@ -28238,6 +28238,7 @@ async function main () {
     }
     changesFile.push(useGitmojis ? `### ${type.icon} ${type.header}` : `### ${type.header}`)
     changesVar.push(useGitmojis ? `### ${type.icon} ${type.header}` : `### ${type.header}`)
+    changesPlainVar.push(`${type.header}`)
 
     const relIssuePrefix = type.relIssuePrefix || 'addresses'
 
@@ -28272,7 +28273,7 @@ async function main () {
       })
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
-      changesPlainVar.push(`- ${scope}${subjectPlainVar.output}`)
+      changesPlainVar.push(`${scope}${subjectPlainVar.output}`)
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
         for (const prId of subjectVar.prs) {
@@ -28307,11 +28308,11 @@ async function main () {
               if (authorLogin) {
                 changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${authorLogin}](${relIssue.author.url})*`)
                 changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${authorLogin}*`)
-                changesPlainVar.push(`  - ${relIssuePrefix} issue ${relIssue.number} opened by ${authorLogin}`)
+                changesPlainVar.push(`  ${relIssuePrefix} issue ${relIssue.number} opened by ${authorLogin}`)
               } else {
                 changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url})*`)
                 changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number}*`)
-                changesPlainVar.push(`  - ${relIssuePrefix} issue ${relIssue.number}`)
+                changesPlainVar.push(`  ${relIssuePrefix} issue ${relIssue.number}`)
               }
             }
           } catch (err) {
