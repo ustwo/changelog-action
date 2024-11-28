@@ -345,7 +345,7 @@ async function main () {
               if (authorLogin) {
                 changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${authorLogin}](${relIssue.author.url})*`)
                 changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${authorLogin}*`)
-                changesPlainVar.push(`  - ${relIssuePrefix} issue ${relIssue.number} opened by ${authorLogin}*`)
+                changesPlainVar.push(`  - ${relIssuePrefix} issue ${relIssue.number} opened by ${authorLogin}`)
               } else {
                 changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url})*`)
                 changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number}*`)
