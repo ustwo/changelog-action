@@ -62,6 +62,44 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo })
   }
 }
 
+function buildSubjectPlain ({ writeToFile, subject, author, authorUrl, owner, repo }) {
+  const hasPR = rePrEnding.test(subject)
+  const prs = []
+  let output = subject
+  if (writeToFile) {
+    const authorLine = author ? ` by ${author}` : ''
+    if (hasPR) {
+      const prMatch = subject.match(rePrEnding)
+      const msgOnly = subject.slice(0, prMatch[0].length * -1)
+      output = msgOnly.replace(rePrId, (m, prId) => {
+        prs.push(prId)
+        return `PR ${prId}`
+      })
+      output += `PR ${prMatch[1]}`
+    } else {
+      output = subject.replace(rePrId, (m, prId) => {
+        return `PR ${prId}`
+      })
+      if (author) {
+        output += ` commit by ${author}`
+      }
+    }
+  } else {
+    if (hasPR) {
+      output = subject.replace(rePrEnding, (m, prId) => {
+        prs.push(prId)
+        return author ? `PR ${prId} by ${author}` : `PR ${prId}`
+      })
+    } else {
+      output = author ? `${subject} commit by ${author}` : subject
+    }
+  }
+  return {
+    output,
+    prs
+  }
+}
+
 async function main () {
   const token = core.getInput('token')
   const tag = core.getInput('tag')
@@ -249,9 +287,17 @@ async function main () {
         owner,
         repo
       })
+      const subjectPlainVar = buildSubjectPlain({
+        writeToFile: false,
+        subject: breakChange.subject,
+        author: breakChange.author,
+        authorUrl: breakChange.authorUrl,
+        owner,
+        repo
+      })
       changesFile.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectFile.output}:\n\n${body}\n`)
       changesVar.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectVar.output}:\n\n${body}\n`)
-      changesPlainVar.push(`- due to ${subjectVar.output}:\n\n${body}\n`)
+      changesPlainVar.push(`- due to ${subjectPlainVar.output}:\n\n${body}\n`)
     }
     idx++
   }
@@ -308,9 +354,17 @@ async function main () {
         owner,
         repo
       })
+      const subjectPlainVar = buildSubjectPlain({
+        writeToFile: false,
+        subject: commit.subject,
+        author: commit.author,
+        authorUrl: commit.authorUrl,
+        owner,
+        repo
+      })
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
-      changesPlainVar.push(`- ${scope}${subjectVar.output}`)
+      changesPlainVar.push(`- ${scope}${subjectPlainVar.output}`)
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
         for (const prId of subjectVar.prs) {
@@ -345,7 +399,7 @@ async function main () {
               if (authorLogin) {
                 changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${authorLogin}](${relIssue.author.url})*`)
                 changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${authorLogin}*`)
-                changesPlainVar.push(`  - ${relIssuePrefix} issue ${relIssue.number} opened by ${authorLogin}*`)
+                changesPlainVar.push(`  - ${relIssuePrefix} issue ${relIssue.number} opened by ${authorLogin}`)
               } else {
                 changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url})*`)
                 changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number}*`)
